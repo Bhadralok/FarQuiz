@@ -9,6 +9,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { useEffect, useState } from "react";
 import bunny from "../assets/bunny.png";
 import he from "he";
+import { useNavigate } from "react-router-dom";
 
 export default function Animal() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -74,8 +75,12 @@ export default function Animal() {
     
     console.log("The options", options);
     console.log(options[0]);
+    console.log("Correct answer",data.results[nextIndex].correct_answer)
   }, [data?.results, nextIndex]);
+  
 
+  const navigate = useNavigate();
+  
   if (isLoading)
     return (
       <div className="flex h-screen w-screen justify-center items-center">
@@ -83,7 +88,7 @@ export default function Animal() {
       </div>
     );
   if (error) return <div>Error occurred: {(error as Error).message}</div>;
-  console.log(data);
+  // console.log(data);
 
   const bars = Array.from({ length: 10 }, (_, i) => i);
   // length of bars determine how many bars there are... that's the length: 10 oo
@@ -111,6 +116,8 @@ export default function Animal() {
     });
   };
 
+  const onClose = () => navigate("/")
+
   const handlePrev = () => {
     if (nextIndex === 0) return;
     setNextIndex(nextIndex - 1);
@@ -121,9 +128,9 @@ export default function Animal() {
   console.log("Selected option value:", options[selectedOption ?? 0]);
 
   return (
-    <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-general-background">
+    <div className="flex h-screen w-screen flex-col px-5 pr-10 pt-5 bg-general-background">
       <div className="flex items-center justify-between">
-        <div className="size-8 outline-2 outline-white rounded-full flex items-center justify-center">
+        <div className="size-8 outline-2 outline-white rounded-full flex items-center justify-center" onClick={onClose}>
           <IoClose size={24} color="white" />
         </div>
         <p className="text-white font-bold">{data.results[0].category}</p>
