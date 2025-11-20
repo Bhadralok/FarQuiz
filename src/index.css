@@ -1,0 +1,19 @@
+@import "tailwindcss";
+body {
+  font-family: "Satoshi", sans-serif;
+}
+
+@theme {
+  --color-general: #7da6ff;
+  --color-general-background: #0b1e47;
+  --color-animal: #36a900;
+  --color-history: #ffffe1;
+  --color-science: #01329d;
+  --color-game: #7da6ff;
+  --color-history-text: #6d3e08;
+  --color-selected: #e5bb30;
+  --color-correct: #008423;
+}
+.menu-btn {
+  @apply h-[52px] w-[340px] rounded-full font-bold text-[20px] text-white flex items-center justify-center;
+}
