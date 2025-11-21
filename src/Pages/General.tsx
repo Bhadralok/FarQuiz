@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Animal() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [selectAnswer, setSelectAnswer] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   const [styles, setStyles] = useState({
@@ -28,7 +29,6 @@ export default function Animal() {
   const handleSelect = (
     selected: "style1" | "style2" | "style3" | "style4"
   ) => {
-    
     const styleMap = {
       style1: 0,
       style2: 1,
@@ -46,8 +46,6 @@ export default function Animal() {
       style4: selected === "style4" ? selectedStyle : defaultStyle,
     });
   };
-
-  // console.log(styles);
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["quiz"],
@@ -71,16 +69,10 @@ export default function Animal() {
       data.results[nextIndex].incorrect_answers[2],
     ];
     setOptions(newOptions.sort(() => Math.random() - 0.5));
-    // console.log(newOptions.sort(()));
-    
-    console.log("The options", options);
-    console.log(options[0]);
-    console.log("Correct answer",data.results[nextIndex].correct_answer)
   }, [data?.results, nextIndex]);
-  
 
   const navigate = useNavigate();
-  
+
   if (isLoading)
     return (
       <div className="flex h-screen w-screen justify-center items-center">
@@ -88,7 +80,6 @@ export default function Animal() {
       </div>
     );
   if (error) return <div>Error occurred: {(error as Error).message}</div>;
-  // console.log(data);
 
   const bars = Array.from({ length: 10 }, (_, i) => i);
   // length of bars determine how many bars there are... that's the length: 10 oo
@@ -96,15 +87,23 @@ export default function Animal() {
   const handleClick = (index: number) => {
     setActiveIndex(index); // i think the logic to go to the next question goes here
     setNextIndex(index);
-    console.log(`Go to question ${index + 1}`);
   };
 
   const newArray = [];
   newArray.push(data?.results[0]);
-  // console.log(`new array`, newArray);
+
+  console.log(selectedOption);
+
+  console.log(selectAnswer);
 
   const handleNext = () => {
     if (nextIndex === 9) return;
+    if (!selectedOption) {
+      setSelectAnswer(true);
+      console.log(selectAnswer);
+      return;
+    }
+
     setNextIndex(nextIndex + 1);
     setActiveIndex(activeIndex + 1);
     setSelectedOption(null); // reset selection
@@ -114,9 +113,18 @@ export default function Animal() {
       style3: defaultStyle,
       style4: defaultStyle,
     });
+    setSelectAnswer(false);
+
+    const correctOption = data.results[nextIndex].correct_answer;
+    const selectedObj = options[selectedOption];
+    if (correctOption !== selectedObj) {
+      console.log("wrong answer");
+    } else {
+      console.log("correct answer");
+    }
   };
 
-  const onClose = () => navigate("/")
+  const onClose = () => navigate("/");
 
   const handlePrev = () => {
     if (nextIndex === 0) return;
@@ -124,13 +132,13 @@ export default function Animal() {
     setActiveIndex(activeIndex - 1);
   };
 
-  console.log("Selected option index:", selectedOption);
-  console.log("Selected option value:", options[selectedOption ?? 0]);
-
   return (
-    <div className="flex h-screen w-screen flex-col px-5 pr-10 pt-5 bg-general-background">
+    <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-general-background">
       <div className="flex items-center justify-between">
-        <div className="size-8 outline-2 outline-white rounded-full flex items-center justify-center" onClick={onClose}>
+        <div
+          className="size-8 outline-2 outline-white rounded-full flex items-center justify-center"
+          onClick={onClose}
+        >
           <IoClose size={24} color="white" />
         </div>
         <p className="text-white font-bold">{data.results[0].category}</p>
@@ -196,6 +204,11 @@ export default function Animal() {
               D. {options[3] && he.decode(options[3])}
             </button>
           </div>
+          {selectAnswer == true && (
+            <p className="text-white pt-2 pl-2 text-sm">
+              Please pick an option
+            </p>
+          )}
         </div>
         <div className=" pt-10 flex gap-4 items-center justify-center flex-wrap w-full pb-10 px-10 text-xl">
           {nextIndex === 9 ? (
