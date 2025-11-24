@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import bunny from "../assets/bunny.png";
 import he from "he";
 import { useNavigate } from "react-router-dom";
+import ErrorPage from "../assets/UI/ErrorPage";
 
 export default function Animal() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -79,7 +80,8 @@ export default function Animal() {
         <Loading />
       </div>
     );
-  if (error) return <div>Error occurred: {(error as Error).message}</div>;
+    
+  if (error) return <ErrorPage />;
 
   const bars = Array.from({ length: 10 }, (_, i) => i);
   // length of bars determine how many bars there are... that's the length: 10 oo
@@ -98,7 +100,7 @@ export default function Animal() {
 
   const handleNext = () => {
     if (nextIndex === 9) return;
-    if (!selectedOption) {
+    if (selectedOption === null) {
       setSelectAnswer(true);
       console.log(selectAnswer);
       return;

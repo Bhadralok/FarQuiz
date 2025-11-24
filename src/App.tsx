@@ -8,10 +8,11 @@ import Home from "./Pages/Home";
 import General from "./Pages/General";
 import { useEffect } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
+import Page404 from "./Pages/Page404";
 
 export default function App() {
   useEffect(() => {
-    console.log("calling is ready")
+    console.log("calling is ready");
     sdk.actions.ready();
   }, []);
 
@@ -20,6 +21,8 @@ export default function App() {
       <>
         <Route path="/" element={<Home />}></Route>
         <Route path="/general" element={<General />} />
+
+        <Route path="*" element={<Page404 />} />
       </>
     )
   );
