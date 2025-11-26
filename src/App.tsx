@@ -9,6 +9,7 @@ import General from "./Pages/General";
 import { useEffect } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import Page404 from "./Pages/Page404";
+import Animal from "./Pages/Animal";
 
 export default function App() {
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function App() {
       <>
         <Route path="/" element={<Home />}></Route>
         <Route path="/general" element={<General />} />
+        <Route path="/animal" element={<Animal />} />
 
         <Route path="*" element={<Page404 />} />
       </>

@@ -39,6 +39,7 @@ export default function Home() {
           <h2>General knowledge</h2>
         </button>
         <button
+          onClick={() => navigate("/animal")}
           className="menu-btn bg-animal "
           style={{ backgroundImage: `url(${animal})` }}
         >
