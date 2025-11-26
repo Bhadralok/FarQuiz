@@ -15,6 +15,8 @@ import ErrorPage from "../assets/UI/ErrorPage";
 export default function General() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [selectAnswer, setSelectAnswer] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [answers, setAnswers] = useState<(number | null)[]>(
     Array(10).fill(null)
@@ -131,6 +133,15 @@ export default function General() {
 
       return [...prev, currentQuestion];
     });
+    setCorrectAnswers((prev) => {
+      const currentAnswer = data.results[nextIndex].correct_answer;
+      if (prev.includes(currentAnswer)) return prev;
+
+      return [...prev, currentAnswer];
+    });
+
+    console.log("correct answers", correctAnswers);
+    console.log("questions", questions);
 
     if (selectedOption === null) {
       setSelectAnswer(true);
@@ -138,13 +149,18 @@ export default function General() {
     }
     console.log(questions);
 
+    if (nextIndex === 9) {
+      setSubmitted(true);
+      return;
+    }
+
     if (nextIndex === 10) return;
     setNextIndex(nextIndex + 1);
     setActiveIndex(activeIndex + 1);
     setSelectAnswer(false);
   };
   const onClose = () => navigate("/");
-  
+
   const allAnswered = answers.every((a) => a !== null);
 
   const handlePrev = () => {
@@ -156,9 +172,9 @@ export default function General() {
   console.log(nextIndex);
   return (
     <>
-      {!allAnswered ? (
+      {!submitted ? (
         <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-general-background">
-          <div className="flex items-center justify-between">
+          <header className="flex items-center justify-between">
             <div
               className="size-8 outline-2 outline-white rounded-full flex items-center justify-center"
               onClick={onClose}
@@ -169,7 +185,7 @@ export default function General() {
             <div>
               <GiHamburgerMenu size={24} color="white" />
             </div>
-          </div>
+          </header>
 
           <div className="text-white font-bold pt-5">
             <div className="flex justify-between items-center">
@@ -248,36 +264,24 @@ export default function General() {
             <div className="pt-10 flex gap-4 items-center justify-center flex-wrap w-full pb-10 px-10 text-xl">
               {nextIndex === 9 ? (
                 <>
-                  <button
-                    className="flex items-center justify-between px-8 w-full h-[52px] gap-2 outline-2 outline-white text-white rounded-full"
-                    onClick={handlePrev}
-                  >
+                  <button className="prev-btn" onClick={handlePrev}>
                     <IoChevronBackSharp />
                     Previous
                   </button>
 
-                  <button
-                    className="flex items-center justify-between px-10 w-full h-[52px] gap-2 bg-correct text-white font-medium rounded-full"
-                    onClick={handleNext}
-                  >
+                  <button className="submit-btn" onClick={handleNext}>
                     Submit
                     <IoChevronForwardSharp />
                   </button>
                 </>
               ) : (
                 <>
-                  <button
-                    className="flex items-center justify-between px-8 w-full h-[52px] gap-2 outline-2 outline-white text-white rounded-full"
-                    onClick={handlePrev}
-                  >
+                  <button className="prev-btn" onClick={handlePrev}>
                     <IoChevronBackSharp />
                     Previous
                   </button>
 
-                  <button
-                    className="flex items-center justify-between px-10 w-full h-[52px] gap-2 bg-white rounded-full"
-                    onClick={handleNext}
-                  >
+                  <button className="next-btn" onClick={handleNext}>
                     Next
                     <IoChevronForwardSharp />
                   </button>
@@ -287,8 +291,44 @@ export default function General() {
           </div>
         </div>
       ) : (
-        <div className="flex justify-center items-center">
-          <h1>Somthing</h1>
+        <div className="flex pt-10 gap-5 pb-10 h-screen w-full flex-col px-7 items-center">
+          <header className="flex pb-5 items-center w-full justify-between">
+            <div
+              className="size-8 outline-2 rounded-full flex items-center justify-center"
+              onClick={onClose}
+            >
+              <IoClose size={24} />
+            </div>
+            <p className="font-bold">Summary</p>
+            <div>
+              <GiHamburgerMenu size={24} />
+            </div>
+          </header>
+          {questions.map((question, index) => (
+            <div key={index} className="flex w-full gap-2">
+              <div className="w-3 bg-list h-full"></div>
+              <div>
+                <h1>{he.decode(question)}</h1>
+                <h1 className="font-medium">
+                  <span className="text-answer">Answer: </span>
+                  {he.decode(correctAnswers[index])}
+                </h1>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={() => navigate(0)}
+            className="flex items-center justify-between px-10 w-full h-[60px] gap-2 outline-2 outline-black font-bold rounded-full"
+          >
+            <IoChevronBackSharp /> Restart the quiz
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center justify-between px-10 w-full h-[60px] gap-2 bg-list font-bold text-white rounded-full"
+          >
+            Change quiz topic
+            <IoChevronForwardSharp />
+          </button>
         </div>
       )}
     </>

@@ -14,6 +14,8 @@ body {
   --color-history-text: #6d3e08;
   --color-selected: #e5bb30;
   --color-correct: #008423;
+  --color-list: #ffc300;
+  --color-answer: #c59700;
 }
 .menu-btn {
   @apply h-[52px] w-[340px] rounded-full font-bold text-[20px] text-white flex items-center justify-center;
@@ -34,4 +36,13 @@ body {
 /* 3. Optional: Hide for IE/Edge (if necessary, often covered by other methods) */
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
+}
+.prev-btn {
+  @apply flex items-center justify-between px-8 w-full h-[52px] gap-2 outline-2 outline-white text-white rounded-full;
+}
+.submit-btn {
+  @apply flex items-center justify-between px-10 w-full h-[52px] gap-2 bg-correct text-white font-medium rounded-full;
+}
+.next-btn {
+  @apply flex items-center justify-between px-10 w-full h-[52px] gap-2 bg-white rounded-full;
 }
