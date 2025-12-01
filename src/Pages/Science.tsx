@@ -23,9 +23,6 @@ export default function General() {
     Array(10).fill(null)
   );
   const [questions, setQuestions] = useState<string[]>([]);
-  const [selectedTexts, setSelectedTexts] = useState<string[]>(
-    Array(10).fill("")
-  );
 
   const [styles, setStyles] = useState({
     style1: defaultStyle,
@@ -36,6 +33,9 @@ export default function General() {
 
   const [nextIndex, setNextIndex] = useState(0);
   const [options, setOptions] = useState<string[]>([]);
+  const [selectedTexts, setSelectedTexts] = useState<string[]>(
+    Array(10).fill("")
+  );
 
   const handleSelect = (
     selected: "style1" | "style2" | "style3" | "style4"
@@ -67,7 +67,7 @@ export default function General() {
     queryKey: ["quiz"],
     queryFn: async () => {
       const response = await fetch(
-        "https://opentdb.com/api.php?amount=10&category=27&difficulty=easy&type=multiple"
+        "https://opentdb.com/api.php?amount=10&category=30&difficulty=easy&type=multiple"
       );
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
@@ -111,22 +111,21 @@ export default function General() {
 
   const bars = Array.from({ length: 10 }, (_, i) => i);
 
-  // const handleClick = (index: number) => {
-  //   setActiveIndex(index);
-  //   setNextIndex(index);
+  //   const handleClick = (index: number) => {
+  //     setActiveIndex(index);
+  //     setNextIndex(index);
 
-  //   // 🔥 restore selection when bar is clicked
-  //   const saved = answers[index];
-  //   setSelectedOption(saved);
+  //     // 🔥 restore selection when bar is clicked
+  //     const saved = answers[index];
+  //     setSelectedOption(saved);
 
-  //   setStyles({
-  //     style1: saved === 0 ? selectedStyle : defaultStyle,
-  //     style2: saved === 1 ? selectedStyle : defaultStyle,
-  //     style3: saved === 2 ? selectedStyle : defaultStyle,
-  //     style4: saved === 3 ? selectedStyle : defaultStyle,
-  //   });
-  // };
-  // const questions: string[] = [];
+  //     setStyles({
+  //       style1: saved === 0 ? selectedStyle : defaultStyle,
+  //       style2: saved === 1 ? selectedStyle : defaultStyle,
+  //       style3: saved === 2 ? selectedStyle : defaultStyle,
+  //       style4: saved === 3 ? selectedStyle : defaultStyle,
+  //     });
+  //   };
   const handleNext = () => {
     setQuestions((prev) => {
       const currentQuestion = data.results[nextIndex].question;
@@ -141,7 +140,6 @@ export default function General() {
 
       return [...prev, currentAnswer];
     });
-
     setSelectedTexts((prev) => {
       const updated = [...prev];
       const selectedText = options[selectedOption!];
@@ -178,7 +176,7 @@ export default function General() {
   return (
     <>
       {!submitted ? (
-        <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-animal-background overflow-y-scroll scrollbar-hide">
+        <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-science-background overflow-y-scroll scrollbar-hide">
           <header className="flex items-center justify-between">
             <div
               className="size-8 outline-2 outline-white rounded-full flex items-center justify-center"
@@ -300,8 +298,6 @@ export default function General() {
           questions={questions}
           correctAnswers={correctAnswers}
           onClose={onClose}
-          accentColor="bg-animal"
-          accentColorText="text-animal"
           PickedOption={selectedTexts}
         />
       )}

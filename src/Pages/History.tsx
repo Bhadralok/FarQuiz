@@ -67,7 +67,7 @@ export default function General() {
     queryKey: ["quiz"],
     queryFn: async () => {
       const response = await fetch(
-        "https://opentdb.com/api.php?amount=10&category=27&difficulty=easy&type=multiple"
+        "https://opentdb.com/api.php?amount=10&category=23&difficulty=easy&type=multiple"
       );
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
@@ -178,7 +178,7 @@ export default function General() {
   return (
     <>
       {!submitted ? (
-        <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-animal-background overflow-y-scroll scrollbar-hide">
+        <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-history-background overflow-y-scroll scrollbar-hide">
           <header className="flex items-center justify-between">
             <div
               className="size-8 outline-2 outline-white rounded-full flex items-center justify-center"
@@ -300,8 +300,8 @@ export default function General() {
           questions={questions}
           correctAnswers={correctAnswers}
           onClose={onClose}
-          accentColor="bg-animal"
-          accentColorText="text-animal"
+          accentColor="bg-history-background"
+          accentColorText="text-history-background"
           PickedOption={selectedTexts}
         />
       )}

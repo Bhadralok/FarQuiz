@@ -5,17 +5,20 @@ body {
 
 @theme {
   --color-general: #7da6ff;
-  --color-general-background: #0b1e47;
+  --color-general-background: #344874;
   --color-animal: #36a900;
   --color-animal-background: #002f0c;
   --color-history: #ffffe1;
   --color-science: #01329d;
-  --color-game: #7da6ff;
+  --color-game: #de5500;
+  --color-game-background: #5b2300;
   --color-history-text: #6d3e08;
   --color-selected: #e5bb30;
   --color-correct: #008423;
-  --color-list: #ffc300;
-  --color-answer: #c59700;
+  --color-list: #00c033;
+  --color-answer: #ffc300;
+  --color-history-background: #4d4d3c;
+  --color-science-background: #00287d;
 }
 .menu-btn {
   @apply h-[52px] w-[340px] rounded-full font-bold text-[20px] text-white flex items-center justify-center;
@@ -31,7 +34,7 @@ body {
 /* 2. Hide scrollbar for Firefox */
 .scrollbar-hide {
   scrollbar-width: none;
-}
+}l
 
 /* 3. Optional: Hide for IE/Edge (if necessary, often covered by other methods) */
 .scrollbar-hide {

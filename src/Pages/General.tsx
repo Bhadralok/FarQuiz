@@ -11,6 +11,7 @@ import bunny from "../assets/bunny.png";
 import he from "he";
 import { useNavigate } from "react-router-dom";
 import ErrorPage from "../assets/UI/ErrorPage";
+import Summary from "../assets/UI/Summary";
 
 export default function General() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -22,6 +23,9 @@ export default function General() {
     Array(10).fill(null)
   );
   const [questions, setQuestions] = useState<string[]>([]);
+  const [selectedTexts, setSelectedTexts] = useState<string[]>(
+    Array(10).fill("")
+  );
 
   const [styles, setStyles] = useState({
     style1: defaultStyle,
@@ -71,8 +75,6 @@ export default function General() {
     },
   });
 
-  console.log(answers);
-
   useEffect(() => {
     if (!data) return;
 
@@ -109,22 +111,21 @@ export default function General() {
 
   const bars = Array.from({ length: 10 }, (_, i) => i);
 
-  const handleClick = (index: number) => {
-    setActiveIndex(index);
-    setNextIndex(index);
+  // const handleClick = (index: number) => {
+  //   setActiveIndex(index);
+  //   setNextIndex(index);
 
-    // 🔥 restore selection when bar is clicked
-    const saved = answers[index];
-    setSelectedOption(saved);
+  //   // 🔥 restore selection when bar is clicked
+  //   const saved = answers[index];
+  //   setSelectedOption(saved);
 
-    setStyles({
-      style1: saved === 0 ? selectedStyle : defaultStyle,
-      style2: saved === 1 ? selectedStyle : defaultStyle,
-      style3: saved === 2 ? selectedStyle : defaultStyle,
-      style4: saved === 3 ? selectedStyle : defaultStyle,
-    });
-  };
-  // const questions: string[] = [];
+  //   setStyles({
+  //     style1: saved === 0 ? selectedStyle : defaultStyle,
+  //     style2: saved === 1 ? selectedStyle : defaultStyle,
+  //     style3: saved === 2 ? selectedStyle : defaultStyle,
+  //     style4: saved === 3 ? selectedStyle : defaultStyle,
+  //   });
+  // };
   const handleNext = () => {
     setQuestions((prev) => {
       const currentQuestion = data.results[nextIndex].question;
@@ -139,9 +140,12 @@ export default function General() {
 
       return [...prev, currentAnswer];
     });
-
-    console.log("correct answers", correctAnswers);
-    console.log("questions", questions);
+    setSelectedTexts((prev) => {
+      const updated = [...prev];
+      const selectedText = options[selectedOption!];
+      updated[nextIndex] = selectedText;
+      return updated;
+    });
 
     if (selectedOption === null) {
       setSelectAnswer(true);
@@ -161,7 +165,7 @@ export default function General() {
   };
   const onClose = () => navigate("/");
 
-  const allAnswered = answers.every((a) => a !== null);
+  // const allAnswered = answers.every((a) => a !== null);
 
   const handlePrev = () => {
     if (nextIndex === 0) return;
@@ -169,11 +173,10 @@ export default function General() {
     setActiveIndex(activeIndex - 1);
   };
 
-  console.log(nextIndex);
   return (
     <>
       {!submitted ? (
-        <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-general-background">
+        <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-general-background overflow-y-scroll scrollbar-hide">
           <header className="flex items-center justify-between">
             <div
               className="size-8 outline-2 outline-white rounded-full flex items-center justify-center"
@@ -291,45 +294,12 @@ export default function General() {
           </div>
         </div>
       ) : (
-        <div className="flex pt-10 gap-5 pb-10 h-screen w-full flex-col px-7 items-center">
-          <header className="flex pb-5 items-center w-full justify-between">
-            <div
-              className="size-8 outline-2 rounded-full flex items-center justify-center"
-              onClick={onClose}
-            >
-              <IoClose size={24} />
-            </div>
-            <p className="font-bold">Summary</p>
-            <div>
-              <GiHamburgerMenu size={24} />
-            </div>
-          </header>
-          {questions.map((question, index) => (
-            <div key={index} className="flex w-full gap-2">
-              <div className="w-3 bg-list h-full"></div>
-              <div>
-                <h1>{he.decode(question)}</h1>
-                <h1 className="font-medium">
-                  <span className="text-answer">Answer: </span>
-                  {he.decode(correctAnswers[index])}
-                </h1>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={() => navigate(0)}
-            className="flex items-center justify-between px-10 w-full h-[60px] gap-2 outline-2 outline-black font-bold rounded-full"
-          >
-            <IoChevronBackSharp /> Restart the quiz
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center justify-between px-10 w-full h-[60px] gap-2 bg-list font-bold text-white rounded-full"
-          >
-            Change quiz topic
-            <IoChevronForwardSharp />
-          </button>
-        </div>
+        <Summary
+          questions={questions}
+          correctAnswers={correctAnswers}
+          onClose={onClose}
+          PickedOption={selectedTexts}
+        />
       )}
     </>
   );

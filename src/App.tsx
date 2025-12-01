@@ -10,6 +10,11 @@ import { useEffect } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import Page404 from "./Pages/Page404";
 import Animal from "./Pages/Animal";
+import History from "./Pages/History";
+import Science from "./Pages/Science";
+import Game from "./Pages/Games";
+import Leaderboard from "./Pages/Leaderboard";
+import Layout from "./Layout/Layout";
 
 export default function App() {
   useEffect(() => {
@@ -19,14 +24,18 @@ export default function App() {
 
   const router = createHashRouter(
     createRoutesFromElements(
-      <>
-        <Route path="/" element={<Home />}></Route>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
         <Route path="/general" element={<General />} />
         <Route path="/animal" element={<Animal />} />
-
+        <Route path="/history" element={<History />} />
+        <Route path="/science" element={<Science />} />
+        <Route path="/game" element={<Game />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="*" element={<Page404 />} />
-      </>
+      </Route>
     )
   );
+
   return <RouterProvider router={router} />;
 }
