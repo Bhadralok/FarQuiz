@@ -12,6 +12,7 @@ import he from "he";
 import { useNavigate } from "react-router-dom";
 import ErrorPage from "../assets/UI/ErrorPage";
 import Summary from "../assets/UI/Summary";
+import Animation from "../assets/UI/Animation";
 
 export default function General() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -26,7 +27,7 @@ export default function General() {
   const [selectedTexts, setSelectedTexts] = useState<string[]>(
     Array(10).fill("")
   );
-
+  const [direction, setDirection] = useState<number>(0);
   const [styles, setStyles] = useState({
     style1: defaultStyle,
     style2: defaultStyle,
@@ -111,23 +112,8 @@ export default function General() {
 
   const bars = Array.from({ length: 10 }, (_, i) => i);
 
-  // const handleClick = (index: number) => {
-  //   setActiveIndex(index);
-  //   setNextIndex(index);
-
-  //   // 🔥 restore selection when bar is clicked
-  //   const saved = answers[index];
-  //   setSelectedOption(saved);
-
-  //   setStyles({
-  //     style1: saved === 0 ? selectedStyle : defaultStyle,
-  //     style2: saved === 1 ? selectedStyle : defaultStyle,
-  //     style3: saved === 2 ? selectedStyle : defaultStyle,
-  //     style4: saved === 3 ? selectedStyle : defaultStyle,
-  //   });
-  // };
-  // const questions: string[] = [];
   const handleNext = () => {
+    setDirection(1);
     setQuestions((prev) => {
       const currentQuestion = data.results[nextIndex].question;
 
@@ -170,130 +156,137 @@ export default function General() {
   // const allAnswered = answers.every((a) => a !== null);
 
   const handlePrev = () => {
+    setDirection(-1);
     if (nextIndex === 0) return;
     setNextIndex(nextIndex - 1);
     setActiveIndex(activeIndex - 1);
   };
 
   return (
-    <>
+    <div>
       {!submitted ? (
-        <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-history-background overflow-y-scroll scrollbar-hide">
-          <header className="flex items-center justify-between">
-            <div
-              className="size-8 outline-2 outline-white rounded-full flex items-center justify-center"
-              onClick={onClose}
-            >
-              <IoClose size={24} color="white" />
-            </div>
-            <p className="text-white font-bold">{data.results[0].category}</p>
-            <div>
-              <GiHamburgerMenu size={24} color="white" />
-            </div>
-          </header>
-
-          <div className="text-white font-bold pt-5">
-            <div className="flex justify-between items-center">
-              <p>Question {activeIndex + 1} </p>
-              <p>{activeIndex + 1} of 10</p>
-            </div>
-
-            <div className="flex gap-1.5 items-center justify-center pt-1.5">
-              {bars.map((bar, i) => (
+        <div className="bg-history-background">
+          <Animation currentIndex={nextIndex} NextDirection={direction}>
+            <div className="flex h-screen w-screen flex-col px-5 pt-5 bg-history-background overflow-y-scroll scrollbar-hide">
+              <header className="flex items-center justify-between">
                 <div
-                  key={i}
-                  // onClick={() => handleClick(i)}
-                  className={`w-full h-3  cursor-pointer rounded ${
-                    activeIndex === i
-                      ? "outline-2 outline-black bg-white"
-                      : "bg-black/30"
-                  }`}
-                ></div>
-              ))}
-            </div>
-          </div>
-
-          <div className="py-6">
-            <img src={bunny} alt="" />
-          </div>
-
-          <div className="text-white pb-11">
-            <h1 className="text-3xl leading-none font-bold flex wrap-break-word flex-wrap">
-              {he.decode(data?.results[nextIndex].question)}
-            </h1>
-          </div>
-
-          <div className="flex h-full flex-col justify-between">
-            <div>
-              <p className="text-white font-bold tracking-wider">
-                Choose your answer
-              </p>
-
-              <div className="pt-2 flex flex-col gap-2">
-                <button
-                  className={styles.style1}
-                  onClick={() => handleSelect("style1")}
+                  className="size-8 outline-2 outline-white rounded-full flex items-center justify-center"
+                  onClick={onClose}
                 >
-                  A. {options[0] && he.decode(options[0])}
-                </button>
+                  <IoClose size={24} color="white" />
+                </div>
+                <p className="text-white font-bold">
+                  {data.results[0].category}
+                </p>
+                <div>
+                  <GiHamburgerMenu size={24} color="white" />
+                </div>
+              </header>
 
-                <button
-                  className={styles.style2}
-                  onClick={() => handleSelect("style2")}
-                >
-                  B. {options[1] && he.decode(options[1])}
-                </button>
+              <div className="text-white font-bold pt-5">
+                <div className="flex justify-between items-center">
+                  <p>Question {activeIndex + 1} </p>
+                  <p>{activeIndex + 1} of 10</p>
+                </div>
 
-                <button
-                  className={styles.style3}
-                  onClick={() => handleSelect("style3")}
-                >
-                  C. {options[2] && he.decode(options[2])}
-                </button>
-
-                <button
-                  className={styles.style4}
-                  onClick={() => handleSelect("style4")}
-                >
-                  D. {options[3] && he.decode(options[3])}
-                </button>
+                <div className="flex gap-1.5 items-center justify-center pt-1.5">
+                  {bars.map((bar, i) => (
+                    <div
+                      key={i}
+                      // onClick={() => handleClick(i)}
+                      className={`w-full h-3  cursor-pointer rounded ${
+                        activeIndex === i
+                          ? "outline-2 outline-black bg-white"
+                          : "bg-black/30"
+                      }`}
+                    ></div>
+                  ))}
+                </div>
               </div>
 
-              {selectAnswer && (
-                <p className="text-white pt-2 pl-2 text-sm">
-                  Please pick an option
-                </p>
-              )}
+              <div className="py-6">
+                <img src={bunny} alt="" />
+              </div>
+
+              <div className="text-white pb-11">
+                <h1 className="text-3xl leading-none font-bold flex wrap-break-word flex-wrap">
+                  {he.decode(data?.results[nextIndex].question)}
+                </h1>
+              </div>
+
+              <div className="flex h-full flex-col justify-between">
+                <div>
+                  <p className="text-white font-bold tracking-wider">
+                    Choose your answer
+                  </p>
+
+                  <div className="pt-2 flex flex-col gap-2">
+                    <button
+                      className={styles.style1}
+                      onClick={() => handleSelect("style1")}
+                    >
+                      A. {options[0] && he.decode(options[0])}
+                    </button>
+
+                    <button
+                      className={styles.style2}
+                      onClick={() => handleSelect("style2")}
+                    >
+                      B. {options[1] && he.decode(options[1])}
+                    </button>
+
+                    <button
+                      className={styles.style3}
+                      onClick={() => handleSelect("style3")}
+                    >
+                      C. {options[2] && he.decode(options[2])}
+                    </button>
+
+                    <button
+                      className={styles.style4}
+                      onClick={() => handleSelect("style4")}
+                    >
+                      D. {options[3] && he.decode(options[3])}
+                    </button>
+                  </div>
+
+                  {selectAnswer && (
+                    <p className="text-white pt-2 pl-2 text-sm">
+                      Please pick an option
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-10 flex gap-4 items-center justify-center flex-wrap w-full pb-10 px-10 text-xl">
+                  {nextIndex === 9 ? (
+                    <>
+                      <button className="prev-btn" onClick={handlePrev}>
+                        <IoChevronBackSharp />
+                        Previous
+                      </button>
+
+                      <button className="submit-btn" onClick={handleNext}>
+                        Submit
+                        <IoChevronForwardSharp />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="prev-btn" onClick={handlePrev}>
+                        <IoChevronBackSharp />
+                        Previous
+                      </button>
+
+                      <button className="next-btn" onClick={handleNext}>
+                        Next
+                        <IoChevronForwardSharp />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
-
-            <div className="pt-10 flex gap-4 items-center justify-center flex-wrap w-full pb-10 px-10 text-xl">
-              {nextIndex === 9 ? (
-                <>
-                  <button className="prev-btn" onClick={handlePrev}>
-                    <IoChevronBackSharp />
-                    Previous
-                  </button>
-
-                  <button className="submit-btn" onClick={handleNext}>
-                    Submit
-                    <IoChevronForwardSharp />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button className="prev-btn" onClick={handlePrev}>
-                    <IoChevronBackSharp />
-                    Previous
-                  </button>
-
-                  <button className="next-btn" onClick={handleNext}>
-                    Next
-                    <IoChevronForwardSharp />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
+          </Animation>
         </div>
       ) : (
         <Summary
@@ -305,7 +298,7 @@ export default function General() {
           PickedOption={selectedTexts}
         />
       )}
-    </>
+    </div>
   );
 }
 
