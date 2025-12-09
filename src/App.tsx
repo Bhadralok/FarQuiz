@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import Home from "./Pages/Home";
 import General from "./Pages/General";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import Page404 from "./Pages/Page404";
 import Animal from "./Pages/Animal";
@@ -15,10 +15,18 @@ import Science from "./Pages/Science";
 import Game from "./Pages/Games";
 import Leaderboard from "./Pages/Leaderboard";
 import Layout from "./Layout/Layout";
-
+import { queryObjects } from "node:v8";
+  queryObjects
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    console.log("calling is ready");
+    console.log(sdk);
+    // const userName = sdk.user.getCurrentUser();
+  }, []);
+
+  useEffect(() => {
     sdk.actions.ready();
   }, []);
 

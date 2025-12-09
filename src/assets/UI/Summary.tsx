@@ -6,6 +6,7 @@ import {
 import { GiHamburgerMenu } from "react-icons/gi";
 import he from "he";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 type SummaryProps = {
   questions: string[];
@@ -24,8 +25,20 @@ export default function Summary({
   accentColor = "bg-general",
   accentColorText = "text-general",
 }: SummaryProps) {
+  // const [counter, setCounter] = useState<number>(0);
   const navigate = useNavigate();
 
+  const isCorrect = (index) => {
+    // setCounter((n) => n++);
+    if (correctAnswers[index] === PickedOption[index]) {
+      const style = "text-green-600";
+      return style;
+    } else {
+      const style = "text-red-600";
+      return style;
+    }
+  };
+  // console.log(counter);
   return (
     <div className="flex pt-10 overflow-y-scroll scrollbar-hide gap-5 pb-10 h-screen w-full flex-col px-5 items-center">
       <header className="flex pb-5 items-center w-full justify-between">
@@ -46,11 +59,11 @@ export default function Summary({
           <div className={`min-w-1 ${accentColor} h-full`}></div>
           <div>
             <p>{he.decode(question)}</p>
-            <p className="font-bold">
-              <span className={`${accentColorText}`}>Answer: </span>
+            <p className={`font-bold `}>
+              <span className={`${accentColorText} `}>Answer: </span>
               {he.decode(correctAnswers[index])}
             </p>
-            <p className="font-bold">
+            <p className={`font-bold ${isCorrect(index)}`}>
               <span className={`${accentColorText}`}>You Selected: </span>
               {he.decode(PickedOption[index])}
             </p>
