@@ -15,16 +15,12 @@ import Science from "./Pages/Science";
 import Game from "./Pages/Games";
 import Leaderboard from "./Pages/Leaderboard";
 import Layout from "./Layout/Layout";
-import { queryObjects } from "node:v8";
-  queryObjects
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    console.log(sdk);
-    // const userName = sdk.user.getCurrentUser();
-  }, []);
+export default function App() {
+  // useEffect(() => {
+  //   console.log(sdk);
+  //   // const userName = sdk.user.getCurrentUser();
+  // }, []);
 
   useEffect(() => {
     sdk.actions.ready();

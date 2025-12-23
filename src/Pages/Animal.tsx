@@ -52,7 +52,7 @@ export default function General() {
     const index = styleMap[selected];
     setSelectedOption(index);
 
-    // 🔥 Save selected answer for this question
+    // Save selected answer for this question
     const updated = [...answers];
     updated[nextIndex] = index;
     setAnswers(updated);

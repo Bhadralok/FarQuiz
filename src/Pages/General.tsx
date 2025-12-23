@@ -178,7 +178,7 @@ export default function General() {
                 <p className="text-white font-bold">
                   {data.results[0].category}
                 </p>
-                <div className="bg-red-500" onClick={() => console.log("something")}>
+                <div onClick={() => console.log("something")}>
                   <GiHamburgerMenu size={24} color="white" />
                 </div>
               </header>
