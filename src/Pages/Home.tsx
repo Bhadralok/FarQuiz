@@ -8,24 +8,16 @@ import game from "../assets/Game.png";
 import { useNavigate } from "react-router-dom";
 import background from "../assets/Background.png";
 import { Link } from "react-router-dom";
-import * as MiniApp from "@farcaster/miniapp-sdk";
-
-declare global {
-  interface Window {
-    sdk?: any; // Or a more specific type if you have SDK typings
-  }
-}
+import { useNeynarContext } from "@neynar/react";
+import { sdk } from "@farcaster/miniapp-sdk";
 
 export default function Home() {
-  const [address, setAddress] = useState<string | null>(null);
-  const [balance, setBalance] = useState<number>(0);
-  const [connected, setConnected] = useState(false);
-  const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  const sdk = MiniApp.default || MiniApp;
+  const { user, signIn } = useNeynarContext();
 
   useEffect(() => {
     setIsLoading(true);
@@ -34,53 +26,34 @@ export default function Home() {
     }, 3000);
   }, []);
 
-  console.log(sdk.actions.addMiniApp());
-
-  async function connectEthereumWallet() {
-    try {
-      setStatus("Connecting...");
-
-      let ethProvider: any = null;
-
-      // First: check for Farcaster mini app provider
-      if (window.sdk?.wallet?.getEthereumProvider) {
-        ethProvider = await window.sdk.wallet.getEthereumProvider();
-        console.log("Using Farcaster mini app wallet provider");
-      } else if ((window as any).ethereum) {
-        ethProvider = (window as any).ethereum;
-        console.log("Using window.ethereum");
+  useEffect(() => {
+    // Check if user is already signed in with Neynar
+    if (user) {
+      setIsWalletConnected(true);
+      // Get wallet address from user data if available
+      if (user.verifications && user.verifications.length > 0) {
+        setWalletAddress(user.verifications[0]);
       }
-
-      if (!ethProvider) {
-        window.open("https://metamask.io/download/", "_blank");
-        setStatus("No Ethereum provider available");
-        return;
-      }
-
-      // Request wallet accounts
-      const accounts: string[] = await ethProvider.request({
-        method: "eth_requestAccounts",
-      });
-      const addr = accounts?.[0];
-      if (!addr) {
-        setStatus("No Ethereum account found");
-        return;
-      }
-      setAddress(addr);
-      setConnected(true);
-      setStatus("Wallet connected: " + addr);
-
-      // Optionally check and log if running inside a Farcaster mini app
-      const insideMiniApp = window.sdk?.isInMiniApp
-        ? await window.sdk.isInMiniApp()
-        : false;
-      console.log("Inside Mini App?", insideMiniApp);
-    } catch (err) {
-      setStatus("Wallet connection failed");
-      setResult("Wallet connection failed");
-      console.error(err);
     }
-  }
+  }, [user]);
+
+  const connectWallet = async () => {
+    try {
+      await signIn();
+      // The useEffect above will handle setting the connected state
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+      setResult("Failed to connect wallet. Please try again.");
+    }
+  };
+
+  const addMiniAppToFarcaster = async () => {
+    try {
+      await sdk.actions.addFrame();
+    } catch (error) {
+      console.error("Failed to add miniapp to Farcaster:", error);
+    }
+  };
 
   if (isLoading)
     return (
@@ -99,14 +72,22 @@ export default function Home() {
     );
 
   return (
-    <div className="flex h-screen flex-col items-center pb-20">
+    <div className="flex h-screen flex-col bg-blue-200 items-center pb-20">
       <p>{result}</p>
       <div className="w-full flex items-end justify-end pt-3 pr-10">
         <button
-          onClick={connectEthereumWallet}
-          className="w-fit px-3 py-2 shadow-xl rounded-full text-[10px] font-medium  bg-red-200"
+          onClick={connectWallet}
+          disabled={isWalletConnected}
+          className={`w-fit px-3 py-2 shadow-xl rounded-full text-[10px] font-medium ${
+            isWalletConnected
+              ? "bg-green-200 text-green-800"
+              : "bg-red-200 text-red-800"
+          }`}
         >
-          Connect wallet
+          {isWalletConnected
+            ? `Connected${walletAddress ? ` (${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)})` : ""}`
+            : "Connect wallet"
+          }
         </button>
       </div>
       <div className="h-full w-screen flex-col gap-3.5 flex items-center justify-center">
@@ -147,10 +128,14 @@ export default function Home() {
           <h2 className="">Video Games</h2>
         </button>
       </div>
-      <div className="flex flex-col items-center ">
+      <div className="flex flex-col gap-2 items-center ">
         <Link to={"/leaderboard"}>
           <button className="menu-btn bg-black">Leaderboard</button>
         </Link>
+        <button className="menu-btn bg-black" onClick={addMiniAppToFarcaster}>
+          Add Miniapp
+        </button>
+
         <p className="font-bold text-[12px] text-black/40">
           built by Bhadralok
         </p>
