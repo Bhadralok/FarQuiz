@@ -5,60 +5,69 @@ import animal from "../assets/animals.png";
 import history from "../assets/History.png";
 import science from "../assets/science.png";
 import game from "../assets/Game.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import background from "../assets/Background.png";
-import { Link } from "react-router-dom";
 import { useNeynarContext } from "@neynar/react";
 import { sdk } from "@farcaster/miniapp-sdk";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user, signIn } = useNeynarContext();
 
+  const { user, signIn, isAuthenticated } = useNeynarContext();
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [result, setResult] = useState<string | null>(null);
+  const [farcasterAddress, setFarcasterAddress] = useState<string | null>(null);
+
+  // splash loader
   useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+    const t = setTimeout(() => setIsLoading(false), 3000);
+    return () => clearTimeout(t);
   }, []);
 
+  // Handle Neynar auth
   useEffect(() => {
-    // Check if user is already signed in with Neynar
-    if (user) {
-      setIsWalletConnected(true);
-      // Get wallet address from user data if available
-      if (user.verifications && user.verifications.length > 0) {
-        setWalletAddress(user.verifications[0]);
-      }
-    }
-  }, [user]);
+    if (!isAuthenticated || !user) return;
 
-  const connectWallet = async () => {
+    const evmAddress = user.verifications?.find(
+      (v) => typeof v === "string" && v.startsWith("0x")
+    );
+
+    if (evmAddress) {
+      setFarcasterAddress(evmAddress);
+    }
+  }, [isAuthenticated, user]);
+
+  // FARCASTER AUTH (not wallet connect)
+  const connectFarcaster = async () => {
     try {
       await signIn();
-      // The useEffect above will handle setting the connected state
     } catch (error) {
-      console.error("Failed to connect wallet:", error);
-      setResult("Failed to connect wallet. Please try again.");
+      console.error(error);
+      setResult("Authentication cancelled");
     }
   };
 
+  // ADD MINI APP (CORRECT METHOD)
   const addMiniAppToFarcaster = async () => {
     try {
-      await sdk.actions.addFrame();
+      if (!sdk?.actions?.addMiniApp) {
+        setResult("Not running inside Farcaster");
+        return;
+      }
+
+      await sdk.actions.addMiniApp();
+      setResult("Mini App added successfully");
     } catch (error) {
-      console.error("Failed to add miniapp to Farcaster:", error);
+      console.error(error);
+      setResult("Mini App already added or rejected");
     }
   };
 
   if (isLoading)
     return (
       <div
-        className="flex items-center justify-center bg-whitea h-screen w-screen"
+        className="flex items-center justify-center h-screen w-screen"
         style={{
           backgroundImage: `url('${background}')`,
           backgroundSize: "cover",
@@ -72,24 +81,34 @@ export default function Home() {
     );
 
   return (
-    <div className="flex h-screen flex-col bg-blue-200 items-center pb-20">
-      <p>{result}</p>
+    <div className="flex h-screen flex-col bg-green-200 items-center pb-20">
+      {result && <p>{result}</p>}
+
+      {/* FARCASTER AUTH BUTTON */}
       <div className="w-full flex items-end justify-end pt-3 pr-10">
         <button
-          onClick={connectWallet}
-          disabled={isWalletConnected}
+          onClick={connectFarcaster}
+          disabled={isAuthenticated}
           className={`w-fit px-3 py-2 shadow-xl rounded-full text-[10px] font-medium ${
-            isWalletConnected
+            isAuthenticated
               ? "bg-green-200 text-green-800"
               : "bg-red-200 text-red-800"
           }`}
         >
-          {isWalletConnected
-            ? `Connected${walletAddress ? ` (${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)})` : ""}`
-            : "Connect wallet"
-          }
+          {isAuthenticated
+            ? `Farcaster Connected${
+                farcasterAddress
+                  ? ` (${farcasterAddress.slice(
+                      0,
+                      6
+                    )}...${farcasterAddress.slice(-4)})`
+                  : ""
+              }`
+            : "Sign in with Farcaster"}
         </button>
       </div>
+
+      {/* MENU */}
       <div className="h-full w-screen flex-col gap-3.5 flex items-center justify-center">
         <p className="font-bold text-sm">Pick a quiz topic</p>
         <button
